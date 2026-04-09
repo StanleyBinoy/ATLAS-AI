@@ -93,6 +93,10 @@ class ManagerAgent(BaseAgent):
         """Merge model refinements without allowing the model to weaken required branches."""
         merged = baseline.copy()
 
+        task_category = str(decision.get("task_category", "")).strip()
+        if task_category in {"chat", "planning", "research", "execution", "hybrid"}:
+            merged["task_category"] = task_category
+
         for key in {"requires_web", "requires_plan", "requires_research", "requires_execution", "parallelizable", "degraded_ok"}:
             merged[key] = baseline.get(key, False)
 
