@@ -36,35 +36,42 @@ def _get_database():
 
 def log_task(user_input, agent_used, result, status="success", metadata=None):
     """Insert a task record into the SQLite task log."""
-    db = _get_database()
-    db["tasks"].insert(
-        {
-            "timestamp": datetime.now().isoformat(),
-            "user_input": user_input,
-            "agent_used": agent_used,
-            "result": result,
-            "status": status,
-            "metadata": json.dumps(metadata or {}),
-        }
-    )
+    try:
+        db = _get_database()
+        db["tasks"].insert(
+            {
+                "timestamp": datetime.now().isoformat(),
+                "user_input": user_input,
+                "agent_used": agent_used,
+                "result": result,
+                "status": status,
+                "metadata": json.dumps(metadata or {}),
+            }
+        )
+    except Exception as exc:
+        print(f"Task log failed: {exc}")
 
 
 def get_recent_tasks(n=10):
     """Return the most recent task records as a list of dictionaries."""
-    db = _get_database()
-    query = """
-        select id, timestamp, user_input, agent_used, result, status, metadata
-        from tasks
-        order by id desc
-        limit ?
-    """
-    rows = list(db.query(query, [n]))
-    for row in rows:
-        try:
-            row["metadata"] = json.loads(row.get("metadata") or "{}")
-        except json.JSONDecodeError:
-            row["metadata"] = {}
-    return rows
+    try:
+        db = _get_database()
+        query = """
+            select id, timestamp, user_input, agent_used, result, status, metadata
+            from tasks
+            order by id desc
+            limit ?
+        """
+        rows = list(db.query(query, [n]))
+        for row in rows:
+            try:
+                row["metadata"] = json.loads(row.get("metadata") or "{}")
+            except json.JSONDecodeError:
+                row["metadata"] = {}
+        return rows
+    except Exception as exc:
+        print(f"Task history lookup failed: {exc}")
+        return []
 
 
 def print_task_history():

@@ -26,7 +26,7 @@ ATLAS also includes:
 
 ```bash
 git clone [repo]
-cd atlas
+cd <repo-folder>
 pip install -r requirements.txt
 cp .env.example .env
 python main.py
