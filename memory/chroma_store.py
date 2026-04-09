@@ -143,7 +143,14 @@ def get_positive_examples(n=5):
 
     try:
         results = collection.get(where={"feedback": "positive"}, limit=n)
-        return results.get("documents", [])
+        documents = results.get("documents", [])
+        flattened = []
+        for item in documents:
+            if isinstance(item, list):
+                flattened.extend(str(text) for text in item if text)
+            elif item:
+                flattened.append(str(item))
+        return flattened
     except Exception as exc:
         print(f"Positive memory lookup failed: {exc}")
         return []

@@ -13,6 +13,7 @@ def call_model(
     """Call the configured model provider and return a plain-text response."""
     openrouter_model = model or config.PRIMARY_MODEL
     ollama_model = config.FALLBACK_MODEL
+    last_error = ""
 
     for _ in range(config.MAX_RETRIES):
         try:
@@ -32,8 +33,9 @@ def call_model(
                 content = response.choices[0].message.content
                 if content:
                     return content
-        except Exception:
-            pass
+        except Exception as exc:
+            last_error = f"OpenRouter error: {exc}"
+            print(last_error)
 
         try:
             print(f"Using Ollama fallback model: {ollama_model}")
@@ -47,7 +49,11 @@ def call_model(
             content = response["message"]["content"]
             if content:
                 return content
-        except Exception:
-            pass
+        except Exception as exc:
+            last_error = f"Ollama error: {exc}"
+            print(last_error)
+
+    if last_error:
+        return f"ATLAS: I could not connect to any AI model. Last error: {last_error}"
 
     return "ATLAS: I could not connect to any AI model. Please check your setup."
