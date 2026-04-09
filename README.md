@@ -1,6 +1,6 @@
 # ATLAS
 
-ATLAS — A local multi-agent AI system that thinks, remembers, and improves.
+ATLAS - A local multi-agent AI system that thinks, remembers, and improves.
 
 ## What it does
 
