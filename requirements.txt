@@ -1,0 +1,7 @@
+openai
+chromadb
+rich
+python-dotenv
+requests
+sqlite-utils
+ollama
